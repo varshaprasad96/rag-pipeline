@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rag-pipeline-pod
+  labels:
+    app: rag-pipeline
+spec:
+  containers:
+  - name: rag-pipeline
+    image: rag-pipeline:v2
+    args:
+    - "--top_k=2"
+    - "--temperature=0.7"
+    imagePullPolicy: IfNotPresent
+  restartPolicy: Never
+

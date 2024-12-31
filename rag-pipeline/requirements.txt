@@ -1,0 +1,5 @@
+transformers==4.32.0
+sentence-transformers==2.2.2
+faiss-cpu==1.7.4
+numpy==1.23.5
+huggingface_hub==0.27.0
