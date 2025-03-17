@@ -64,64 +64,6 @@ def objective(parameters):
     print(f"BLEU={bleu_score}")
 
 
-# def rag_pipeline_execute(query, top_k=1, temperature=1.0):
-#     from sentence_transformers import SentenceTransformer
-#     from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
-#     import faiss
-#     from transformers import pipeline
-#     import numpy as np
-#
-#     retriever_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-#     documents = [
-#         "The Eiffel Tower is in Paris.",
-#         "The Great Wall of China is a historic fortification.",
-#         "Python is a programming language.",
-#         "SpaceX is a private aerospace company."
-#     ]
-#     doc_embeddings = retriever_model.encode(documents)
-#     index = faiss.IndexFlatL2(doc_embeddings.shape[1])
-#     index.add(np.array(doc_embeddings))
-#
-#     # Generator: Pre-trained GPT-2
-#     generator = pipeline("text-generation", model="gpt2", tokenizer="gpt2")
-#     # Retrieve top k documents
-#     query_embedding = retriever_model.encode([query])
-#     distances, indices = index.search(query_embedding, top_k)
-#     retrieved_docs = [documents[i] for i in indices[0]]
-#
-#     # Generate response using retrieved documents
-#     context = " ".join(retrieved_docs)
-#     generated = generator(context, max_length=50, temperature=temperature, num_return_sequences=1)
-#     return generated[0]['generated_text']
-#
-#
-# # [1] Create an objective function.
-# def objective(parameters):
-#     from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
-#
-#     query = "Tell me about the Eiffel Tower."
-#     ground_truth = "The Eiffel Tower is a famous landmark in Paris."
-#
-#     # Extract hyperparameters from Katib
-#     top_k = parameters["top_k"]
-#     temperature = parameters["temperature"]
-#
-#     print("in here")
-#     # Run evaluation
-#     response = rag_pipeline_execute(query, top_k, temperature)
-#
-#     # Tokenize the response and ground truth
-#     reference = [ground_truth.split()]  # Reference should be a list of tokens
-#     candidate = response.split()  # Candidate is the generated response tokens
-#
-#     # Apply smoothing to the BLEU score
-#     smoothie = SmoothingFunction().method1  # Use method1 for smoothing
-#     bleu_score = sentence_bleu(reference, candidate, smoothing_function=smoothie)
-#
-#     # ✅ Print metric in the expected format for Katib
-#     print(f'{{"metric_name": "BLEU", "value": {bleu_score}}}')
-
-
 import kubeflow.katib as katib
 
 # [2] Create hyperparameter search space.
