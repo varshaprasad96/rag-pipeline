@@ -12,8 +12,6 @@ documents = [
     "SpaceX is a private aerospace company."
 ]
 doc_embeddings = retriever_model.encode(documents)
-
-# Build FAISS index
 index = faiss.IndexFlatL2(doc_embeddings.shape[1])
 index.add(np.array(doc_embeddings))
 

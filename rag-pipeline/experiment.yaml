@@ -1,0 +1,114 @@
+apiVersion: "kubeflow.org/v1beta1"
+kind: Experiment
+metadata:
+  name: rag-tuning-experiment
+  namespace: kubeflow
+spec:
+  objective:
+    type: maximize
+    goal: 0.8
+    objectiveMetricName: BLEU
+  algorithm:
+    algorithmName: grid
+  parameters:
+    - name: top_k
+      parameterType: int
+      feasibleSpace:
+        min: "1"
+        max: "5"
+        step: "1"  # Adding a step for discrete search
+    - name: temperature
+      parameterType: double
+      feasibleSpace:
+        min: "0.5"
+        max: "1.0"
+        step: "0.1"  # Adding a step for temperature
+  metricsCollectorSpec:
+    collector:
+      kind: StdOut
+  trialTemplate:
+    primaryContainerName: training-container
+    trialParameters:
+      - name: top_k
+        description: Number of top documents to retrieve
+        reference: top_k
+      - name: temperature
+        description: Temperature for text generation
+        reference: temperature
+    trialSpec:
+      apiVersion: batch/v1
+      kind: Job
+      spec:
+        template:
+          spec:
+            containers:
+              - name: training-container
+                image: rag-pipeline:v6
+                command:
+                  - "python"
+                  - "/app/training.py"
+                  - "--top_k=${trialParameters.top_k}"
+                  - "--temperature=${trialParameters.temperature}"
+                resources:
+                  limits:
+                    cpu: "1"
+                    memory: "2Gi"
+            restartPolicy: Never
+
+
+############## Random ##############
+#apiVersion: "kubeflow.org/v1beta1"
+#kind: Experiment
+#metadata:
+#  name: rag-tuning-experiment
+#  namespace: kubeflow
+#spec:
+#  objective:
+#    type: maximize
+#    goal: 0.8
+#    objectiveMetricName: BLEU
+#  algorithm:
+#    algorithmName: grid
+#  parameters:
+#    - name: top_k
+#      parameterType: int
+#      feasibleSpace:
+#        min: "1"
+#        max: "5"
+#    - name: temperature
+#      parameterType: double
+#      feasibleSpace:
+#        min: "0.5"
+#        max: "1.0"
+#  metricsCollectorSpec:
+#    collector:
+#      kind: StdOut
+#  trialTemplate:
+#    primaryContainerName: training-container
+#    trialParameters:
+#      - name: top_k
+#        description: Number of top documents to retrieve
+#        reference: top_k
+#      - name: temperature
+#        description: Temperature for text generation
+#        reference: temperature
+#    trialSpec:
+#      apiVersion: batch/v1
+#      kind: Job
+#      spec:
+#        template:
+#          spec:
+#            containers:
+#              - name: training-container
+#                image: rag-pipeline:v6
+#                command:
+#                  - "python"
+#                  - "/app/training.py"
+#                  - "--top_k=${trialParameters.top_k}"
+#                  - "--temperature=${trialParameters.temperature}"
+#                resources:
+#                  limits:
+#                    cpu: "1"
+#                    memory: "2Gi"
+#            restartPolicy: Never
+#
